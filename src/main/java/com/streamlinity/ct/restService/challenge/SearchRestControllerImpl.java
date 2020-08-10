@@ -20,19 +20,9 @@ import java.util.List;
 @Profile("default")
 @RestController
 @RequestMapping("/item")
-public class SearchRestControllerImpl implements SearchSvcInterface {
+public class SearchRestControllerImpl {
 
     public SearchSvcImpl searchSvc;
-
-    @Override
-    public void init(String itemPriceJsonFileName) {
-
-    }
-
-    @Override
-    public void init(File itemPriceJsonFile) {
-
-    }
 
     @GetMapping
     public List<Item> getItems(){

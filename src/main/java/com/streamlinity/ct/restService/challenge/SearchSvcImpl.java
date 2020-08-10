@@ -31,9 +31,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class SearchSvcImpl implements SearchSvcInterface {
 
-    @Value("classpath:itemPrices.json")
-    private Resource itemPricesFile;
-
     @Override
     public void init(String itemPriceJsonFileName) {
 
