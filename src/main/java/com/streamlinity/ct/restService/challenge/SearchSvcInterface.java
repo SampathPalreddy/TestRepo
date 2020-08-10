@@ -6,6 +6,7 @@ package com.streamlinity.ct.restService.challenge;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import com.streamlinity.ct.model.Item;
