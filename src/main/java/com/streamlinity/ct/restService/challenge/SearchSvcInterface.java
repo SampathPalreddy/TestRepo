@@ -5,11 +5,10 @@ package com.streamlinity.ct.restService.challenge;
  * Do not edit this interface.   Your SearchSvcInterface solution must implement this interface
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import com.streamlinity.ct.model.Item;
+
+import java.io.File;
+import java.util.List;
 
 public interface SearchSvcInterface {
 

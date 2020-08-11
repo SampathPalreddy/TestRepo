@@ -2,21 +2,17 @@ package com.streamlinity.ct.restService.challenge;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.streamlinity.ct.model.Item;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -45,10 +41,10 @@ public class SearchSvcImpl implements SearchSvcInterface {
 
     @Override
     public void init(File itemPriceJsonFile) {
+        items.clear();
         ObjectMapper mapper = new ObjectMapper();
         try {
             Item[] itemsList = mapper.readValue(itemPriceJsonFile, Item[].class);
-            items.clear();
             Collections.addAll(items, itemsList);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -57,16 +53,7 @@ public class SearchSvcImpl implements SearchSvcInterface {
 
     @Override
     public List<Item> getItems()  {
-        try {
-            if(items.isEmpty()){
-                return readItemsFromJsonFile("itemPrices.json");
-            } else {
-                return items;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
+       return items;
     }
 
 
@@ -85,33 +72,15 @@ public class SearchSvcImpl implements SearchSvcInterface {
 
     @Override
     public List<Item> getItems(String category) {
-        try {
-           if(items.isEmpty()){
-                items =  readItemsFromJsonFile("itemPrices.json");
-            }
             return items.stream()
                     .filter(it -> it.getCategory_short_name().equals(category))
                     .collect(Collectors.toList());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
     }
 
     @Override
     public List<Item> getItem(String itemShortName) {
-        try {
-            if(items.isEmpty()){
-                items =  readItemsFromJsonFile("itemPrices.json");
-            }
             return items.stream()
                     .filter(it -> it.getShort_name().equals(itemShortName))
                     .collect(Collectors.toList());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
     }
 }

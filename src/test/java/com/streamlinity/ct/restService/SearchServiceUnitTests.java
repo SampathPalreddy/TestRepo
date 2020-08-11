@@ -2,7 +2,6 @@ package com.streamlinity.ct.restService;
 
 import com.streamlinity.ct.model.Item;
 import com.streamlinity.ct.restService.challenge.SearchSvcInterface;
-
 import junitparams.JUnitParamsRunner;
 import org.junit.ClassRule;
 import org.junit.Rule;
