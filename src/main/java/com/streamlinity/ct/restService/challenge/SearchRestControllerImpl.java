@@ -2,10 +2,13 @@ package com.streamlinity.ct.restService.challenge;
 
 import com.streamlinity.ct.model.Item;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.util.List;
+import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.OK;
 
 /*
  * This controller needs to expose the following rest endpoints.  You need to fill in the implementation here
@@ -22,21 +25,20 @@ import java.util.List;
 @RequestMapping("/item")
 public class SearchRestControllerImpl {
 
-    public SearchSvcImpl searchSvc;
+    public SearchSvcInterface searchSvc ;
 
-    @GetMapping
-    public List<Item> getItems(){
-      return searchSvc.getItems();
-    }
-
-    @GetMapping
-    public List<Item> getItems(@RequestParam("category") String category){
-        return searchSvc.getItems(category);
+    public SearchRestControllerImpl(SearchSvcInterface searchSvc) {
+        this.searchSvc = searchSvc;
     }
 
     @GetMapping("/{itemShortName}")
-    public List<Item> getItem(@PathVariable("itemShortName") String shortName){
-        return searchSvc.getItem(shortName);
+    public ResponseEntity<List<Item>> getItemsWithName(@PathVariable("itemShortName") String shortName){
+        return new ResponseEntity<>(searchSvc.getItem(shortName),OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Item>> getAllItemsWithCategory(@RequestParam("category") Optional<String> category){
+        return category.map(s -> new ResponseEntity<>(searchSvc.getItems(s), OK)).orElseGet(() -> new ResponseEntity<>(searchSvc.getItems(), OK));
     }
 
 }

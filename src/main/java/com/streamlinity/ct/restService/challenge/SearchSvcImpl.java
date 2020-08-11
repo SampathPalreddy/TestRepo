@@ -14,7 +14,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -31,20 +33,36 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class SearchSvcImpl implements SearchSvcInterface {
 
+    private List<Item> items = new ArrayList<>();
     @Override
     public void init(String itemPriceJsonFileName) {
-
+        try {
+            items = readItemsFromJsonFile(itemPriceJsonFileName+".json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void init(File itemPriceJsonFile) {
-
-    }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Item[] itemsList = mapper.readValue(itemPriceJsonFile, Item[].class);
+            items.clear();
+            Collections.addAll(items, itemsList);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     @Override
     public List<Item> getItems()  {
         try {
-            return readItemsFromJsonFile();
+            if(items.isEmpty()){
+                return readItemsFromJsonFile("itemPrices.json");
+            } else {
+                return items;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,14 +70,14 @@ public class SearchSvcImpl implements SearchSvcInterface {
     }
 
 
-    private List<Item> readItemsFromJsonFile() throws IOException {
+    private List<Item> readItemsFromJsonFile(String fileName) throws IOException {
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource[] resources = resolver.getResources("classpath:itemPrices.json");
+        Resource[] resources = resolver.getResources("classpath:"+fileName);
         List<Item> items = new ArrayList<>();
         for(Resource resource: resources){
             try(Reader reader= new InputStreamReader(resource.getInputStream(),UTF_8)){
-                Item item = new ObjectMapper().readValue(FileCopyUtils.copyToString(reader), Item.class);
-                items.add(item);
+                Item[] itemsList = new ObjectMapper().readValue(FileCopyUtils.copyToString(reader), Item[].class);
+                Collections.addAll(items, itemsList);
             }
         }
         return items;
@@ -68,9 +86,11 @@ public class SearchSvcImpl implements SearchSvcInterface {
     @Override
     public List<Item> getItems(String category) {
         try {
-            List<Item> items = readItemsFromJsonFile();
+           if(items.isEmpty()){
+                items =  readItemsFromJsonFile("itemPrices.json");
+            }
             return items.stream()
-                    .filter(it -> it.getShort_name().equals(category))
+                    .filter(it -> it.getCategory_short_name().equals(category))
                     .collect(Collectors.toList());
 
         } catch (IOException e) {
@@ -82,9 +102,11 @@ public class SearchSvcImpl implements SearchSvcInterface {
     @Override
     public List<Item> getItem(String itemShortName) {
         try {
-            List<Item> items = readItemsFromJsonFile();
+            if(items.isEmpty()){
+                items =  readItemsFromJsonFile("itemPrices.json");
+            }
             return items.stream()
-                    .filter(it -> it.getCategory_short_name().equals(itemShortName))
+                    .filter(it -> it.getShort_name().equals(itemShortName))
                     .collect(Collectors.toList());
 
         } catch (IOException e) {
